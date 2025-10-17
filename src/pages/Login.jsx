@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Label, TextInput, Button, Alert } from 'flowbite-react';
 import { motion } from 'framer-motion';
-import { BookOpen, Code2, Users, FileText } from 'lucide-react';
+import { BookOpen, Code2, Users, FileText, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, loginWithGoogle } = useAuth();
@@ -180,14 +181,28 @@ export default function Login() {
                   value='Password'
                   className='mb-1 block text-sm'
                 />
-                <TextInput
-                  id='password'
-                  type='password'
-                  placeholder='Enter your password'
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className='relative'>
+                  <TextInput
+                    id='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='Enter your password'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className='pr-10'
+                  />
+                  <button
+                    type='button'
+                    className='absolute inset-y-0 right-0 pr-3 flex items-center'
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    ) : (
+                      <Eye className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className='flex items-center justify-between text-xs sm:text-sm'>

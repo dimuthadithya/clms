@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { Label, TextInput, Button, Alert } from 'flowbite-react';
 import { motion } from 'framer-motion';
-import { Code2, GraduationCap, Users, BookOpen, FileText } from 'lucide-react';
+import {
+  Code2,
+  GraduationCap,
+  Users,
+  BookOpen,
+  FileText,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -14,6 +22,8 @@ export default function Register() {
     password: '',
     confirmPassword: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup, loginWithGoogle } = useAuth();
@@ -270,14 +280,28 @@ export default function Register() {
                   value='Password'
                   className='mb-1 block text-sm'
                 />
-                <TextInput
-                  id='password'
-                  type='password'
-                  placeholder='••••••••'
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+                <div className='relative'>
+                  <TextInput
+                    id='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='••••••••'
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className='pr-10'
+                  />
+                  <button
+                    type='button'
+                    className='absolute inset-y-0 right-0 pr-3 flex items-center'
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    ) : (
+                      <Eye className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className='sm:col-span-1'>
@@ -286,14 +310,28 @@ export default function Register() {
                   value='Confirm password'
                   className='mb-1 block text-sm'
                 />
-                <TextInput
-                  id='confirmPassword'
-                  type='password'
-                  placeholder='••••••••'
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
+                <div className='relative'>
+                  <TextInput
+                    id='confirmPassword'
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder='••••••••'
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className='pr-10'
+                  />
+                  <button
+                    type='button'
+                    className='absolute inset-y-0 right-0 pr-3 flex items-center'
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    ) : (
+                      <Eye className='h-4 w-4 text-gray-400 hover:text-gray-600' />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className='sm:col-span-2'>
