@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Code2, Users, FileText, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { signInUser, signInWithGoogle } from '../utils/firebaseFunctions';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,20 +12,51 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  // Helper function to get user-friendly error messages
+  const getErrorMessage = (error) => {
+    switch (error.code) {
+      case 'auth/user-not-found':
+        return 'No account found with this email address.';
+      case 'auth/wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/user-disabled':
+        return 'This account has been disabled. Please contact support.';
+      case 'auth/too-many-requests':
+        return 'Too many failed attempts. Please try again later.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your connection.';
+      case 'auth/invalid-credential':
+        return 'Invalid email or password. Please check your credentials.';
+      default:
+        return 'Failed to sign in. Please try again.';
+    }
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (!email.trim()) {
+      setError('Please enter your email address.');
+      return;
+    }
+
+    if (!password.trim()) {
+      setError('Please enter your password.');
+      return;
+    }
+
     try {
       setError('');
       setLoading(true);
-      await login(email, password);
-      navigate('/dashboard'); // You'll need to create this route
+      await signInUser(email, password);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      setError('Failed to sign in. Please check your credentials.');
+      setError(getErrorMessage(error));
     }
 
     setLoading(false);
@@ -34,11 +66,17 @@ export default function Login() {
     try {
       setError('');
       setLoading(true);
-      await loginWithGoogle();
+      await signInWithGoogle();
       navigate('/dashboard');
     } catch (error) {
       console.error('Google sign-in error:', error);
-      setError('Failed to sign in with Google. Please try again.');
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in was cancelled. Please try again.');
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('Popup was blocked. Please allow popups for this site.');
+      } else {
+        setError('Failed to sign in with Google. Please try again.');
+      }
     }
 
     setLoading(false);

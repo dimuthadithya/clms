@@ -12,6 +12,10 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  createUserAccount,
+  signInWithGoogle,
+} from '../utils/firebaseFunctions';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -26,7 +30,6 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   function handleChange(e) {
@@ -36,30 +39,94 @@ export default function Register() {
     });
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  // Helper function to get user-friendly error messages
+  const getErrorMessage = (error) => {
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        return 'An account with this email already exists. Please sign in instead.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/operation-not-allowed':
+        return 'Email registration is not enabled. Please contact support.';
+      case 'auth/weak-password':
+        return 'Password is too weak. Please use a stronger password.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your connection.';
+      default:
+        return 'Failed to create account. Please try again.';
+    }
+  };
 
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match');
+  // Form validation
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      setError('Please enter your first name.');
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      setError('Please enter your last name.');
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Please enter your email address.');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address.');
+      return false;
+    }
+
+    if (!formData.password) {
+      setError('Please enter a password.');
+      return false;
     }
 
     if (formData.password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      setError('Password must be at least 6 characters long.');
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return false;
+    }
+
+    return true;
+  };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
     }
 
     try {
       setError('');
       setLoading(true);
-      await signup(
+
+      // Additional user data including phone if provided
+      const additionalData = {};
+      if (formData.phone.trim()) {
+        additionalData.phone = formData.phone.trim();
+      }
+
+      await createUserAccount(
         formData.email,
         formData.password,
         formData.firstName,
-        formData.lastName
+        formData.lastName,
+        additionalData
       );
-      navigate('/dashboard'); // You'll need to create this route
+
+      navigate('/dashboard');
     } catch (error) {
       console.error('Registration error:', error);
-      setError('Failed to create account. Please try again.');
+      setError(getErrorMessage(error));
     }
 
     setLoading(false);
@@ -69,11 +136,17 @@ export default function Register() {
     try {
       setError('');
       setLoading(true);
-      await loginWithGoogle();
+      await signInWithGoogle();
       navigate('/dashboard');
     } catch (error) {
       console.error('Google sign-in error:', error);
-      setError('Failed to sign in with Google. Please try again.');
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in was cancelled. Please try again.');
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('Popup was blocked. Please allow popups for this site.');
+      } else {
+        setError('Failed to sign in with Google. Please try again.');
+      }
     }
 
     setLoading(false);
