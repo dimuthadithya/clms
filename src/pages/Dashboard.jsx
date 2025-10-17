@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from 'flowbite-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +9,7 @@ export default function Dashboard() {
   async function handleLogout() {
     try {
       await logout();
-      navigate('/login');
+      navigate('/auth/signin');
     } catch (error) {
       console.error('Failed to log out:', error);
     }
@@ -29,9 +28,12 @@ export default function Dashboard() {
                 Hello, {currentUser?.displayName || currentUser?.email}!
               </p>
             </div>
-            <Button onClick={handleLogout} color='gray'>
+            <button
+              onClick={handleLogout}
+              className='bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition-all duration-300'
+            >
               Logout
-            </Button>
+            </button>
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>

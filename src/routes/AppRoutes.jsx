@@ -30,9 +30,9 @@ export const routeConfig = {
   // Public routes (accessible without authentication)
   public: [
     {
-      path: ROUTES.LOGIN,
+      path: ROUTES.SIGNIN,
       element: Login,
-      title: 'Login',
+      title: 'Sign In',
       description: 'User login page',
     },
     {
@@ -40,10 +40,6 @@ export const routeConfig = {
       element: Register,
       title: 'Sign Up',
       description: 'User registration page',
-    },
-    {
-      path: ROUTES.REGISTER,
-      redirect: ROUTES.SIGNUP, // Alternative route for registration
     },
   ],
 

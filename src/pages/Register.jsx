@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Label, TextInput, Button, Alert } from 'flowbite-react';
+import { Label, TextInput, Alert } from 'flowbite-react';
 import { motion } from 'framer-motion';
 import {
   Code2,
@@ -410,14 +410,13 @@ export default function Register() {
               </div>
 
               <div className='sm:col-span-2'>
-                <Button
+                <button
                   type='submit'
-                  className='w-full'
-                  gradientDuoTone='purpleToPink'
+                  className='w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300'
                   disabled={loading}
                 >
                   {loading ? 'Creating account...' : 'Create account'}
-                </Button>
+                </button>
               </div>
 
               <div className='sm:col-span-2 mt-4'>
@@ -432,10 +431,9 @@ export default function Register() {
                   </div>
                 </div>
 
-                <Button
+                <button
                   type='button'
-                  className='w-full mt-4'
-                  color='light'
+                  className='w-full mt-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center'
                   onClick={handleGoogleSignIn}
                   disabled={loading}
                 >
@@ -458,7 +456,7 @@ export default function Register() {
                     />
                   </svg>
                   {loading ? 'Signing in...' : 'Sign up with Google'}
-                </Button>
+                </button>
               </div>
             </form>
 
@@ -466,7 +464,7 @@ export default function Register() {
               <p className='text-sm text-gray-600'>
                 Already have an account?{' '}
                 <Link
-                  to='/login'
+                  to='/auth/signin'
                   className='text-purple-600 hover:text-purple-700 font-semibold'
                 >
                   Sign in

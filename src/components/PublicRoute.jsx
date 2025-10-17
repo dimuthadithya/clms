@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ROUTES } from '../routes/constants';
 
 function PublicRoute({ children }) {
   const { currentUser, loading } = useAuth();
@@ -19,7 +20,7 @@ function PublicRoute({ children }) {
 
   // Redirect to dashboard if already authenticated
   if (currentUser) {
-    return <Navigate to='/dashboard' replace />;
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
   // User is not authenticated, show public content

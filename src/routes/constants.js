@@ -1,9 +1,8 @@
 // Route constants for better maintainability
 export const ROUTES = {
   // Authentication routes
-  LOGIN: '/login',
-  SIGNUP: '/signup',
-  REGISTER: '/register',
+  SIGNIN: '/auth/signin',
+  SIGNUP: '/auth/signup',
 
   // Dashboard routes
   DASHBOARD: '/dashboard',
@@ -65,9 +64,9 @@ export const routeMetadata = {
     breadcrumb: 'Dashboard',
     description: 'Learning Management System Dashboard',
   },
-  [ROUTES.LOGIN]: {
-    title: 'Login | Coderoom LMS',
-    breadcrumb: 'Login',
+  [ROUTES.SIGNIN]: {
+    title: 'Sign In | Coderoom LMS',
+    breadcrumb: 'Sign In',
     description: 'Sign in to your Coderoom LMS account',
   },
   [ROUTES.SIGNUP]: {

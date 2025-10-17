@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Label, TextInput, Button, Alert } from 'flowbite-react';
+import { Label, TextInput, Alert } from 'flowbite-react';
 import { motion } from 'framer-motion';
 import { BookOpen, Code2, Users, FileText, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -256,14 +256,13 @@ export default function Login() {
                 </a>
               </div>
 
-              <Button
+              <button
                 type='submit'
-                className='w-full'
-                gradientDuoTone='purpleToBlue'
+                className='w-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300'
                 disabled={loading}
               >
                 {loading ? 'Signing in...' : 'Sign in'}
-              </Button>
+              </button>
             </form>
 
             <div className='mt-4'>
@@ -278,10 +277,9 @@ export default function Login() {
                 </div>
               </div>
 
-              <Button
+              <button
                 type='button'
-                className='w-full mt-4'
-                color='light'
+                className='w-full mt-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center'
                 onClick={handleGoogleSignIn}
                 disabled={loading}
               >
@@ -304,14 +302,14 @@ export default function Login() {
                   />
                 </svg>
                 {loading ? 'Signing in...' : 'Sign in with Google'}
-              </Button>
+              </button>
             </div>
 
             <div className='mt-4 text-center'>
               <p className='text-sm text-gray-600'>
                 Don't have an account?{' '}
                 <Link
-                  to='/signup'
+                  to='/auth/signup'
                   className='text-blue-600 hover:text-blue-700 font-semibold'
                 >
                   Create account

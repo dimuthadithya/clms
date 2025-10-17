@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ROUTES } from '../routes/constants';
 
 function ProtectedRoute({ children, requiredRoles = [] }) {
   const { currentUser, loading } = useAuth();
@@ -17,9 +18,9 @@ function ProtectedRoute({ children, requiredRoles = [] }) {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Redirect to signin if not authenticated
   if (!currentUser) {
-    return <Navigate to='/login' replace />;
+    return <Navigate to={ROUTES.SIGNIN} replace />;
   }
 
   // Role-based access control (if roles are specified)
