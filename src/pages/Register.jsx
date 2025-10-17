@@ -22,7 +22,6 @@ export default function Register() {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -109,18 +108,11 @@ export default function Register() {
       setError('');
       setLoading(true);
 
-      // Additional user data including phone if provided
-      const additionalData = {};
-      if (formData.phone.trim()) {
-        additionalData.phone = formData.phone.trim();
-      }
-
       await createUserAccount(
         formData.email,
         formData.password,
         formData.firstName,
-        formData.lastName,
-        additionalData
+        formData.lastName
       );
 
       navigate('/dashboard');
@@ -326,22 +318,6 @@ export default function Register() {
                   type='email'
                   placeholder='you@example.com'
                   value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className='sm:col-span-2'>
-                <Label
-                  htmlFor='phone'
-                  value='Phone number'
-                  className='mb-1 block text-sm'
-                />
-                <TextInput
-                  id='phone'
-                  type='tel'
-                  placeholder='+1 (555) 000-0000'
-                  value={formData.phone}
                   onChange={handleChange}
                   required
                 />

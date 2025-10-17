@@ -61,16 +61,12 @@ export const createUserAccount = async (
       displayName: `${firstName} ${lastName}`,
     });
 
-    // Save additional user data to Firestore
+    // Save user data to Firestore following the security rules structure
     await setDoc(doc(db, 'users', user.uid), {
-      uid: user.uid,
+      name: `${firstName} ${lastName}`,
       email: user.email,
-      firstName,
-      lastName,
-      displayName: `${firstName} ${lastName}`,
+      role: 'student', // Default role as required by security rules
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      ...additionalData,
     });
 
     return user;
@@ -112,21 +108,11 @@ export const signInWithGoogle = async () => {
     // Check if user document exists, if not create one
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     if (!userDoc.exists()) {
-      const [firstName, ...lastNameParts] = user.displayName
-        ? user.displayName.split(' ')
-        : ['', ''];
-      const lastName = lastNameParts.join(' ');
-
       await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
+        name: user.displayName || '',
         email: user.email,
-        firstName: firstName || '',
-        lastName: lastName || '',
-        displayName: user.displayName || '',
-        photoURL: user.photoURL || '',
-        provider: 'google',
+        role: 'student', // Default role as required by security rules
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       });
     }
 
@@ -165,8 +151,8 @@ export const resetPassword = async (email) => {
 };
 
 /**
- * Update user profile
- * @param {Object} profileData - Profile data to update
+ * Update user profile (following security rules - cannot update role)
+ * @param {Object} profileData - Profile data to update (name, email only)
  * @returns {Promise}
  */
 export const updateUserProfile = async (profileData) => {
@@ -174,19 +160,22 @@ export const updateUserProfile = async (profileData) => {
     const user = auth.currentUser;
     if (!user) throw new Error('No user is currently signed in');
 
-    // Update Firebase Auth profile
-    if (profileData.displayName || profileData.photoURL) {
+    // Prepare allowed data (excluding role as per security rules)
+    const allowedUpdates = {};
+    if (profileData.name) allowedUpdates.name = profileData.name;
+    if (profileData.email) allowedUpdates.email = profileData.email;
+
+    // Update Firebase Auth profile if name changed
+    if (profileData.name) {
       await updateProfile(user, {
-        displayName: profileData.displayName,
-        photoURL: profileData.photoURL,
+        displayName: profileData.name,
       });
     }
 
-    // Update Firestore user document
-    await updateDoc(doc(db, 'users', user.uid), {
-      ...profileData,
-      updatedAt: serverTimestamp(),
-    });
+    // Update Firestore user document (only allowed fields)
+    if (Object.keys(allowedUpdates).length > 0) {
+      await updateDoc(doc(db, 'users', user.uid), allowedUpdates);
+    }
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw error;
@@ -205,10 +194,9 @@ export const updateUserEmail = async (newEmail) => {
 
     await updateEmail(user, newEmail);
 
-    // Update Firestore user document
+    // Update Firestore user document (following security rules)
     await updateDoc(doc(db, 'users', user.uid), {
       email: newEmail,
-      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating user email:', error);
@@ -312,6 +300,50 @@ export const getUserById = async (userId) => {
   } catch (error) {
     console.error('Error getting user by ID:', error);
     throw error;
+  }
+};
+
+/**
+ * Get current user's role
+ * @returns {Promise<string>} - User role (student, instructor, admin)
+ */
+export const getCurrentUserRole = async () => {
+  try {
+    const userData = await getCurrentUserData();
+    return userData.role || 'student';
+  } catch (error) {
+    console.error('Error getting current user role:', error);
+    return 'student'; // Default fallback
+  }
+};
+
+/**
+ * Check if current user has specific role
+ * @param {string} requiredRole - Required role to check
+ * @returns {Promise<boolean>} - Whether user has the required role
+ */
+export const hasRole = async (requiredRole) => {
+  try {
+    const userRole = await getCurrentUserRole();
+    return userRole === requiredRole;
+  } catch (error) {
+    console.error('Error checking user role:', error);
+    return false;
+  }
+};
+
+/**
+ * Check if current user has any of the specified roles
+ * @param {string[]} roles - Array of roles to check
+ * @returns {Promise<boolean>} - Whether user has any of the roles
+ */
+export const hasAnyRole = async (roles) => {
+  try {
+    const userRole = await getCurrentUserRole();
+    return roles.includes(userRole);
+  } catch (error) {
+    console.error('Error checking user roles:', error);
+    return false;
   }
 };
 

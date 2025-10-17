@@ -18,14 +18,8 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  function signup(email, password, firstName, lastName, additionalData = {}) {
-    return createUserAccount(
-      email,
-      password,
-      firstName,
-      lastName,
-      additionalData
-    );
+  function signup(email, password, firstName, lastName) {
+    return createUserAccount(email, password, firstName, lastName);
   }
 
   function login(email, password) {
